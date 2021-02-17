@@ -1,5 +1,6 @@
 import {strict as assert} from 'assert'
 import {PetController} from "../api/controller/pet.controller";
+import {definitions} from "../.temp/types";
 
 const pet = new PetController();
 
@@ -22,21 +23,20 @@ describe('User can', function () {
 
         body = await pet.getByStatus(['sold', 'available']);
         assert(body.length > 0);
-        assert(body.some((pet: any) => pet.status == 'available'));
-        assert(body.some((pet: any) => pet.status == 'sold'));
-        assert(!body.some((pet: any) => pet.status == 'pending'));
+        assert(body.some(pet => pet.status == 'available'));
+        assert(body.some(pet => pet.status == 'sold'));
+        assert(!body.some(pet => pet.status == 'pending'));
     });
 
     it('receive pet by tag', async function() {
         let body = await pet.getByTag('tag1');
         assert(body.length > 0);
-        assert(body.every(
-            (pet:any) => pet.tags.some(
-                (tag:any)=> tag.name == 'tag1')));
+        assert(body.every(pet => pet.tags.some(
+            tag=> tag.name == 'tag1')));
     });
 
     it('be added, updated, deleted', async function(){
-        const petToCreate = {
+        const petToCreate: Omit<definitions['Pet'], 'id'> = {
             "category": {
                 "id": 0,
                 "name": "string"
@@ -60,7 +60,7 @@ describe('User can', function () {
         const foundPet = await pet.getById(addedPet.id);
         assert.deepEqual(foundPet, {...petToCreate, id: addedPet.id}, ' Expect found pet match created pet');
 
-        const newerPet = {
+        const newerPet: definitions['Pet'] = {
             "id": addedPet.id,
             "category": {
                 "id": 0,

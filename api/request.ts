@@ -25,7 +25,8 @@ export class JsonRequest {
         return this
     }
 
-    public send() {
+    public async send() {
         return got<any>(this.options)
     }
 }
+

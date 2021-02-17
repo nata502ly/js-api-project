@@ -106,3 +106,5 @@ dist
 # file: ~/.gitignore_global
 .DS_Store
 .idea
+#don't commit generic types
+.temp/
