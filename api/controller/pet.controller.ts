@@ -1,13 +1,78 @@
 import {URLSearchParams} from 'url';
 import { JsonRequest } from 'http-req-builder'
 import {definitions, operations} from "../../.temp/types";
+import {validate} from "../validator";
 
 export class PetController {
     async getById(id: number | string){
-        return(await new JsonRequest()
+        const body = (await new JsonRequest()
             .url(`http://93.126.97.71:10080/api/pet/${id}`)
             .send<operations['getPetById']['responses']['200']['schema']>()
-        ).body
+        ).body;
+        const schema = {
+            "$schema": "http://json-schema.org/draft-07/schema",
+            "type": "object",
+            "required": [
+                "id",
+                "category",
+                "name",
+                "photoUrls",
+                "tags",
+                "status"
+            ],
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "category": {
+                    "type": "object",
+                    "required": [
+                        "id",
+                        "name"
+                    ],
+                    "properties": {
+                        "id": {
+                            "type": "integer"
+                        },
+                        "name": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "name": {
+                    "type": "string"
+                },
+                "photoUrls": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "tags": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "required": [
+                            "id",
+                            "name"
+                        ],
+                        "properties": {
+                            "id": {
+                                "type": "integer"
+                            },
+                            "name": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                },
+                "status": {
+                    "type": "string"
+                }
+            }
+        };
+        validate(schema, body);
+        return body
     }
 
     async getByTag(tags: string | string[]){
